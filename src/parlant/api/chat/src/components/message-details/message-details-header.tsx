@@ -6,7 +6,7 @@ import HeaderWrapper from '../header-wrapper/header-wrapper';
 import {Flag, X} from 'lucide-react';
 import {Button} from '../ui/button';
 import FlagMessage from './flag-message';
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {getItemFromIndexedDB} from '@/lib/utils';
 
 const MessageDetailsHeader = ({
@@ -32,15 +32,19 @@ const MessageDetailsHeader = ({
 	const [messageFlag, setMessageFlag] = useState<any>(null);
 	const [refreshFlag, setRefreshFlag] = useState(false);
 
+	const handleFlaggedChanged = useCallback((flagged: boolean) => {
+		flaggedChanged?.(flagged);
+	}, [flaggedChanged]);
+
 	useEffect(() => {
 		const flag = getItemFromIndexedDB('Parlant-flags', 'message_flags', event?.correlation_id as string, {name: 'sessionIndex', keyPath: 'sessionId'});
 		if (flag) {
 			flag.then((f) => {
 				setMessageFlag((f as {flagValue: string})?.flagValue);
-				flaggedChanged?.(!!(f as {flagValue: string})?.flagValue);
+				handleFlaggedChanged(!!(f as {flagValue: string})?.flagValue);
 			});
 		}
-	}, [event, refreshFlag]);
+	}, [event, refreshFlag, handleFlaggedChanged]);
 
 	return (
 		<HeaderWrapper className={twMerge('static', !event && '!border-transparent bg-[#f5f6f8]', className)}>

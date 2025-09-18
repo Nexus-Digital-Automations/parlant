@@ -1,5 +1,5 @@
 import {AgentInterface, CustomerInterface, SessionInterface} from '@/utils/interfaces';
-import {ReactNode, useEffect} from 'react';
+import {ReactNode, useCallback, useEffect} from 'react';
 
 import {spaceClick} from '@/utils/methods';
 import {DialogDescription, DialogHeader, DialogTitle} from '../ui/dialog';
@@ -27,16 +27,17 @@ const AgentList = (): ReactNode => {
 	const [, setNewSession] = useAtom(newSessionAtom);
 	const [dialog] = useAtom(dialogAtom);
 
-	useEffect(() => {
-		if (agents?.length && agents.length === 1) selectAgent(agents[0]);
-	}, []);
-
-	const selectAgent = (agent: AgentInterface): void => {
+	const selectAgent = useCallback((agent: AgentInterface): void => {
 		setAgent(agent);
 		if (customers.length < 2) {
 			selectCustomer(customers?.[0], agent);
 		}
-	};
+	}, [customers, setAgent]);
+
+	useEffect(() => {
+		if (agents?.length && agents.length === 1) selectAgent(agents[0]);
+	}, [agents, selectAgent]);
+
 
 	const selectCustomer = (customer: CustomerInterface, currAgent?: AgentInterface) => {
 		setAgent(agent || currAgent || null);

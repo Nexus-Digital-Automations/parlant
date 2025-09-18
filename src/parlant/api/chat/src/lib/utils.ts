@@ -245,4 +245,4 @@ export const getIndexedItemsFromIndexedDB = async (dbName: string, storeName: st
     console.error('Error opening IndexedDB:', error);
     return null;
   }
-}
+};

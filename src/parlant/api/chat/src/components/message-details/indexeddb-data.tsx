@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {clearIndexedDBData, getIndexedDBSize} from '@/utils/logs';
 import {Trash} from 'lucide-react';
 import {useEffect, useState} from 'react';

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {useEffect, useRef, useState} from 'react';
 import {twJoin, twMerge} from 'tailwind-merge';
 import Markdown from '../markdown/markdown';

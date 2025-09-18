@@ -21,18 +21,18 @@ export const useWebSocket = (url: string, defaultRunning?: boolean, options?: We
 		}
 	}, []);
 
-	const reconnect = () => {
+	useEffect(() => {
+		if (defaultRunning) start();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	const reconnect = useCallback(() => {
 		start();
 		setTimeout(() => {
 			if (!socketRef?.current?.readyState || !{[socketRef.current.OPEN]: true, [socketRef.current?.CONNECTING]: true}[socketRef.current.readyState]) {
 				reconnect();
 			}
 		}, 5000);
-	};
-
-	useEffect(() => {
-		if (defaultRunning) start();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const start = useCallback(() => {
@@ -73,7 +73,7 @@ export const useWebSocket = (url: string, defaultRunning?: boolean, options?: We
 		});
 
 		setIsRunning(true);
-	}, [url, options, isRunning]);
+	}, [url, options, isRunning, lastMessageFn, reconnect]);
 
 	const pause = useCallback(() => {
 		if (socketRef.current) {
