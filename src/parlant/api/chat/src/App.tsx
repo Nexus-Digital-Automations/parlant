@@ -2,10 +2,10 @@ import './App.css';
 import Chatbot from './components/chatbot/chatbot';
 import {useWebSocket} from './hooks/useWebSocket';
 import {BASE_URL} from './utils/api';
-import {handleChatLogs} from './utils/logs';
+import {handleChatLogsFromWebSocket} from './utils/logs';
 
 const WebSocketComp = () => {
-	const socket = useWebSocket(`${BASE_URL}/logs`, true, null, handleChatLogs);
+	const socket = useWebSocket(`${BASE_URL}/logs`, true, null, handleChatLogsFromWebSocket);
 	void socket;
 	return <div></div>;
 };

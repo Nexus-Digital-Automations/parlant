@@ -9,7 +9,7 @@ export interface CustomerInterface {
 }
 
 export interface Log {
-	level: 'INFO' | 'DEBUG' | 'WARNING';
+	level: 'INFO' | 'DEBUG' | 'WARNING' | 'CRITICAL' | 'ERROR' | 'TRACE';
 	correlation_id: string;
 	message: string;
 	timestamp: number;
@@ -69,4 +69,12 @@ export interface MessageFlag {
 /** Interface for WebSocket message data structure */
 export interface WebSocketMessage {
 	[key: string]: unknown;
+}
+
+/** Interface for Log WebSocket message - extends WebSocketMessage with Log properties */
+export interface LogWebSocketMessage extends WebSocketMessage {
+	level: 'INFO' | 'DEBUG' | 'WARNING' | 'CRITICAL' | 'ERROR' | 'TRACE';
+	correlation_id: string;
+	message: string;
+	timestamp: number;
 }

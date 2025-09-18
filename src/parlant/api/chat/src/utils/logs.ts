@@ -1,13 +1,47 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-escape */
 import { hasOtherOpenedTabs } from '@/lib/broadcast-channel';
-import {Log} from './interfaces';
+import {Log, WebSocketMessage, LogWebSocketMessage} from './interfaces';
 
 const logLevels = ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'TRACE'];
 export const DB_NAME = 'Parlant';
 const STORE_NAME = 'logs';
 const MAX_RECORDS = 2000;
 const CHECK_INTERVAL = 10 * 60 * 1000;
+
+/**
+ * Type guard to check if a WebSocketMessage is a LogWebSocketMessage
+ * @param message - The WebSocket message to check
+ * @returns true if the message has the required Log properties
+ */
+function isLogWebSocketMessage(message: WebSocketMessage): message is LogWebSocketMessage {
+	return (
+		typeof message.level === 'string' &&
+		typeof message.correlation_id === 'string' &&
+		typeof message.message === 'string' &&
+		typeof message.timestamp === 'number' &&
+		['INFO', 'DEBUG', 'WARNING', 'CRITICAL', 'ERROR', 'TRACE'].includes(message.level as string)
+	);
+}
+
+/**
+ * Converts a WebSocketMessage to a Log object if it contains log data
+ * @param message - The WebSocket message to convert
+ * @returns Log object or null if conversion fails
+ */
+function webSocketMessageToLog(message: WebSocketMessage): Log | null {
+	if (!isLogWebSocketMessage(message)) {
+		console.warn('Received WebSocket message is not a valid log message:', message);
+		return null;
+	}
+
+	return {
+		level: message.level,
+		correlation_id: message.correlation_id,
+		message: message.message,
+		timestamp: message.timestamp
+	};
+}
 
 export function getIndexedDBSize(databaseName = DB_NAME, tableName = STORE_NAME): Promise<number> {
 	return new Promise((resolve, reject) => {
@@ -121,6 +155,22 @@ async function getLogs(correlation_id: string): Promise<Log[]> {
 		request.onerror = () => reject(request.error);
 	});
 }
+
+/**
+ * WebSocket adapter function that converts WebSocket messages to Log objects
+ * and handles them via handleChatLogs. This bridges the gap between useWebSocket
+ * callback signature and handleChatLogs function signature.
+ * @param message - WebSocket message to process
+ */
+export const handleChatLogsFromWebSocket = (message: WebSocketMessage): void => {
+	const log = webSocketMessageToLog(message);
+	if (log) {
+		// Call the async function without blocking
+		handleChatLogs(log).catch((error) => {
+			console.error('Error handling chat log from WebSocket:', error);
+		});
+	}
+};
 
 export const handleChatLogs = async (log: Log) => {
 	if (hasOtherOpenedTabs()) return;
