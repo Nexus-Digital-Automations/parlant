@@ -27,25 +27,24 @@ const AgentList = (): ReactNode => {
 	const [, setNewSession] = useAtom(newSessionAtom);
 	const [dialog] = useAtom(dialogAtom);
 
-	const selectAgent = useCallback((agent: AgentInterface): void => {
-		setAgent(agent);
-		if (customers.length < 2) {
-			selectCustomer(customers?.[0], agent);
-		}
-	}, [customers, setAgent]);
-
-	useEffect(() => {
-		if (agents?.length && agents.length === 1) selectAgent(agents[0]);
-	}, [agents, selectAgent]);
-
-
-	const selectCustomer = (customer: CustomerInterface, currAgent?: AgentInterface) => {
+	const selectCustomer = useCallback((customer: CustomerInterface, currAgent?: AgentInterface) => {
 		setAgent(agent || currAgent || null);
 		setCustomer(customer);
 		setNewSession({...newSessionObj, agent_id: agent?.id as string, customer_id: customer.id});
 		setSession(newSessionObj);
 		dialog.closeDialog();
-	};
+	}, [agent, setAgent, setCustomer, setNewSession, setSession, dialog]);
+
+	const selectAgent = useCallback((agent: AgentInterface): void => {
+		setAgent(agent);
+		if (customers.length < 2) {
+			selectCustomer(customers?.[0], agent);
+		}
+	}, [customers, setAgent, selectCustomer]);
+
+	useEffect(() => {
+		if (agents?.length && agents.length === 1) selectAgent(agents[0]);
+	}, [agents, selectAgent]);
 
 	return (
 		<div className='h-full flex flex-col'>

@@ -1,4 +1,13 @@
 import {useEffect, useRef, useState, useCallback} from 'react';
+import {WebSocketMessage} from '../utils/interfaces';
+
+/** Interface representing a log message from WebSocket */
+interface WebSocketLogMessage {
+	level: 'INFO' | 'DEBUG' | 'WARNING';
+	correlation_id: string;
+	message: string;
+	timestamp: number;
+}
 
 interface WebSocketOptions {
 	onMessage?: (message: string) => void;
@@ -7,7 +16,7 @@ interface WebSocketOptions {
 	onClose?: (event: CloseEvent) => void;
 }
 
-export const useWebSocket = (url: string, defaultRunning?: boolean, options?: WebSocketOptions | null, lastMessageFn?: (message: any) => void) => {
+export const useWebSocket = (url: string, defaultRunning?: boolean, options?: WebSocketOptions | null, lastMessageFn?: (message: WebSocketLogMessage) => void) => {
 	const [isConnected, setIsConnected] = useState(false);
 	const [lastMessage, setLastMessage] = useState<string | null>(null);
 	const [isRunning, setIsRunning] = useState(false);
@@ -19,20 +28,6 @@ export const useWebSocket = (url: string, defaultRunning?: boolean, options?: We
 		} else {
 			console.warn('WebSocket is not open. Unable to send message:', message);
 		}
-	}, []);
-
-	useEffect(() => {
-		if (defaultRunning) start();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const reconnect = useCallback(() => {
-		start();
-		setTimeout(() => {
-			if (!socketRef?.current?.readyState || !{[socketRef.current.OPEN]: true, [socketRef.current?.CONNECTING]: true}[socketRef.current.readyState]) {
-				reconnect();
-			}
-		}, 5000);
 	}, []);
 
 	const start = useCallback(() => {
@@ -68,12 +63,25 @@ export const useWebSocket = (url: string, defaultRunning?: boolean, options?: We
 			options?.onClose?.(event);
 			setTimeout(() => {
 				if (socketRef?.current?.readyState === 0 || socketRef?.current?.readyState === 1) return;
-				reconnect();
+				start();
 			}, 5000);
 		});
 
 		setIsRunning(true);
-	}, [url, options, isRunning, lastMessageFn, reconnect]);
+	}, [url, options, isRunning, lastMessageFn]);
+
+	const reconnect = useCallback(() => {
+		start();
+		setTimeout(() => {
+			if (!socketRef?.current?.readyState || !{[socketRef.current.OPEN]: true, [socketRef.current?.CONNECTING]: true}[socketRef.current.readyState]) {
+				reconnect();
+			}
+		}, 5000);
+	}, [start]);
+
+	useEffect(() => {
+		if (defaultRunning) start();
+	}, [defaultRunning, start]);
 
 	const pause = useCallback(() => {
 		if (socketRef.current) {

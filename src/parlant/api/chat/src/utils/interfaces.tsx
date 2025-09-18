@@ -58,3 +58,15 @@ export interface SessionCsvInterface {
 	Flag: string;
 	'Correlation ID': string;
 }
+
+/** Interface for message flag data stored in IndexedDB */
+export interface MessageFlag {
+	flagValue: string;
+	correlationId: string;
+	sessionId: string;
+}
+
+/** Interface for WebSocket message data structure */
+export interface WebSocketMessage {
+	[key: string]: unknown;
+}

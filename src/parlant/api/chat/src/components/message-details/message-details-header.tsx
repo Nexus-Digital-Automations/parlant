@@ -1,5 +1,5 @@
 import {dialogAtom, sessionAtom} from '@/store';
-import {EventInterface} from '@/utils/interfaces';
+import {EventInterface, MessageFlag} from '@/utils/interfaces';
 import {useAtom} from 'jotai';
 import {ClassNameValue, twMerge} from 'tailwind-merge';
 import HeaderWrapper from '../header-wrapper/header-wrapper';
@@ -29,7 +29,7 @@ const MessageDetailsHeader = ({
 	const [session] = useAtom(sessionAtom);
 	const [dialog] = useAtom(dialogAtom);
 	const isCustomer = event?.source === 'customer';
-	const [messageFlag, setMessageFlag] = useState<any>(null);
+	const [messageFlag, setMessageFlag] = useState<string | null>(null);
 	const [refreshFlag, setRefreshFlag] = useState(false);
 
 	const handleFlaggedChanged = useCallback((flagged: boolean) => {
@@ -40,8 +40,9 @@ const MessageDetailsHeader = ({
 		const flag = getItemFromIndexedDB('Parlant-flags', 'message_flags', event?.correlation_id as string, {name: 'sessionIndex', keyPath: 'sessionId'});
 		if (flag) {
 			flag.then((f) => {
-				setMessageFlag((f as {flagValue: string})?.flagValue);
-				handleFlaggedChanged(!!(f as {flagValue: string})?.flagValue);
+				const flagData = f as MessageFlag | null;
+				setMessageFlag(flagData?.flagValue || null);
+				handleFlaggedChanged(!!(flagData?.flagValue));
 			});
 		}
 	}, [event, refreshFlag, handleFlaggedChanged]);

@@ -11,8 +11,8 @@ export interface Utterance {
 const CannedResponses = ({cannedResponses: cannedResponses, className}: {cannedResponses: {id: string; value: string}[]; className?: ClassNameValue}) => {
 	const [isOpen, setIsOpen] = useState(false);
 
-	const onToggle = (e: any) => {
-		setIsOpen(e.target.open);
+	const onToggle = (e: React.SyntheticEvent<HTMLDetailsElement>) => {
+		setIsOpen(e.currentTarget.open);
 	};
 
 	return (
