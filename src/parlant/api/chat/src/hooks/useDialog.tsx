@@ -1,11 +1,11 @@
-import {useState, ReactNode} from 'react';
-import {Dialog, DialogContent, DialogHeader, DialogPortal} from '@/components/ui/dialog';
-import {DialogDescription, DialogTitle} from '@radix-ui/react-dialog';
+import {useState} from 'react';
+import * as React from 'react';
+import {Dialog, DialogContent, DialogHeader, DialogPortal, DialogTitle, DialogDescription} from '@/components/ui/dialog';
 import {spaceClick} from '@/utils/methods';
 import clsx from 'clsx';
 
 interface UseDialogReturn {
-	openDialog: (title: string | null, content: ReactNode, dimensions: Dimensions) => void;
+	openDialog: (title: string | null, content: React.ReactNode, dimensions: Dimensions) => void;
 	DialogComponent: () => JSX.Element;
 	closeDialog: (e?: React.MouseEvent) => void;
 }
@@ -16,12 +16,12 @@ export interface Dimensions {
 }
 
 export const useDialog = (): UseDialogReturn => {
-	const [dialogTitle, setDialogTitle] = useState<ReactNode>(null);
-	const [dialogContent, setDialogContent] = useState<ReactNode>(null);
+	const [dialogTitle, setDialogTitle] = useState<React.ReactNode>(null);
+	const [dialogContent, setDialogContent] = useState<React.ReactNode>(null);
 	const [dialogSize, setDialogSize] = useState<Dimensions>({height: '', width: ''});
 	const [onDialogClosed, setOnDialogClosed] = useState<(() => void) | null>(null);
 
-	const openDialog = (title: string | null, content: ReactNode, dimensions: Dimensions, dialogClosed = null) => {
+	const openDialog = (title: string | null, content: React.ReactNode, dimensions: Dimensions, dialogClosed = null) => {
 		if (title) setDialogTitle(title);
 		setDialogContent(content);
 		setDialogSize({height: dimensions.height, width: dimensions.width});

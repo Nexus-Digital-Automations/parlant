@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
+import type { DialogContentProps, DialogOverlayProps, DialogTitleProps, DialogDescriptionProps } from '@radix-ui/react-dialog';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
 
@@ -13,10 +14,13 @@ const SheetClose = SheetPrimitive.Close;
 
 const SheetPortal = SheetPrimitive.Portal;
 
-const SheetOverlay = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+// Define proper interface for SheetOverlay component props
+interface SheetOverlayComponentProps extends Omit<DialogOverlayProps, 'ref'> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const SheetOverlay = React.forwardRef<HTMLDivElement, SheetOverlayComponentProps>(({ className, ...props }, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
       'fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -26,7 +30,7 @@ const SheetOverlay = React.forwardRef<
     ref={ref}
   />
 ));
-SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
+SheetOverlay.displayName = 'SheetOverlay';
 
 const sheetVariants = cva(
   'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
@@ -48,13 +52,13 @@ const sheetVariants = cva(
 );
 
 interface SheetContentProps
-  extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
-    VariantProps<typeof sheetVariants> {}
+  extends Omit<DialogContentProps, 'ref'>,
+    VariantProps<typeof sheetVariants> {
+  className?: string;
+  children?: React.ReactNode;
+}
 
-const SheetContent = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Content>,
-  SheetContentProps
->(({ side = 'right', className, children, ...props }, ref) => (
+const SheetContent = React.forwardRef<HTMLDivElement, SheetContentProps>(({ side = 'right', className, children, ...props }, ref) => (
   <SheetPortal>
     <SheetOverlay />
     <SheetPrimitive.Content
@@ -70,7 +74,7 @@ const SheetContent = React.forwardRef<
     </SheetPrimitive.Content>
   </SheetPortal>
 ));
-SheetContent.displayName = SheetPrimitive.Content.displayName;
+SheetContent.displayName = 'SheetContent';
 
 const SheetHeader = ({
   className,
@@ -100,29 +104,35 @@ const SheetFooter = ({
 );
 SheetFooter.displayName = 'SheetFooter';
 
-const SheetTitle = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
->(({ className, ...props }, ref) => (
+// Define proper interface for SheetTitle component props
+interface SheetTitleComponentProps extends Omit<DialogTitleProps, 'ref'> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const SheetTitle = React.forwardRef<HTMLHeadingElement, SheetTitleComponentProps>(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
     className={cn('text-lg font-semibold text-foreground', className)}
     {...props}
   />
 ));
-SheetTitle.displayName = SheetPrimitive.Title.displayName;
+SheetTitle.displayName = 'SheetTitle';
 
-const SheetDescription = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
->(({ className, ...props }, ref) => (
+// Define proper interface for SheetDescription component props
+interface SheetDescriptionComponentProps extends Omit<DialogDescriptionProps, 'ref'> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+const SheetDescription = React.forwardRef<HTMLParagraphElement, SheetDescriptionComponentProps>(({ className, ...props }, ref) => (
   <SheetPrimitive.Description
     ref={ref}
     className={cn('text-sm text-muted-foreground', className)}
     {...props}
   />
 ));
-SheetDescription.displayName = SheetPrimitive.Description.displayName;
+SheetDescription.displayName = 'SheetDescription';
 
 export {
   Sheet,

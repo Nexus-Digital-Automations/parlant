@@ -1,14 +1,6 @@
 import {useEffect, useRef, useState, useCallback} from 'react';
 import {WebSocketMessage} from '../utils/interfaces';
 
-/** Interface representing a log message from WebSocket */
-interface WebSocketLogMessage {
-	level: 'INFO' | 'DEBUG' | 'WARNING';
-	correlation_id: string;
-	message: string;
-	timestamp: number;
-}
-
 interface WebSocketOptions {
 	onMessage?: (message: string) => void;
 	onError?: (error: Event) => void;
@@ -16,7 +8,7 @@ interface WebSocketOptions {
 	onClose?: (event: CloseEvent) => void;
 }
 
-export const useWebSocket = (url: string, defaultRunning?: boolean, options?: WebSocketOptions | null, lastMessageFn?: (message: WebSocketLogMessage) => void) => {
+export const useWebSocket = (url: string, defaultRunning?: boolean, options?: WebSocketOptions | null, lastMessageFn?: (message: WebSocketMessage) => void) => {
 	const [isConnected, setIsConnected] = useState(false);
 	const [lastMessage, setLastMessage] = useState<string | null>(null);
 	const [isRunning, setIsRunning] = useState(false);

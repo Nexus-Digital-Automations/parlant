@@ -1,0 +1,17 @@
+{
+  "tasks": [
+    {
+      "status": "pending",
+      "created_at": "2025-09-18T15:41:00.415Z",
+      "title": "Fix parlant chat TypeScript build failures (50+ errors)",
+      "description": "Resolve critical TypeScript build errors in parlant chat: WebSocketMessage interface conflicts with Log type, Radix UI component prop type mismatches, React component children property errors, ForwardRefExoticComponent type incompatibilities. Build currently failing with 50+ type errors preventing project compilation.",
+      "category": "error",
+      "id": "error_1758210060415_e1gxgw5qfs4"
+    }
+  ],
+  "completed_tasks": [],
+  "features": [],
+  "agents": [],
+  "project_success_criteria": [],
+  "task_creation_attempts": []
+}
